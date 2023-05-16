@@ -1,32 +1,60 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
+  <div class="container">
+    <task-list
+      :tasks="tasks"
+      @add-task="addTask"
+      @update-task="updateTask"
+      @delete-task="deleteTask"
+    ></task-list>
   </div>
 </template>
 
+<script>
+import TaskList from "./components/TaskList.vue";
+
+export default {
+  name: "App",
+  components: {
+    TaskList,
+  },
+
+  data() {
+    return {
+      tasks: [],
+    };
+  },
+
+  created() {
+    if (localStorage.getItem("tasks")) {
+      this.tasks = JSON.parse(localStorage.getItem("tasks"));
+    }
+  },
+
+  methods: {
+    addTask(newTask) {
+      this.tasks.push({
+        text: newTask,
+        isComplete: false,
+      });
+
+      localStorage.setItem("tasks", JSON.stringify(this.tasks));
+    },
+    updateTask(task, newText) {
+      task.text = newText;
+      localStorage.setItem("tasks", JSON.stringify(this.tasks));
+    },
+    deleteTask(task) {
+      const index = this.tasks.indexOf(task);
+      this.tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(this.tasks));
+    },
+  },
+};
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
+.container {
+  max-width: 1200px;
+  margin: auto;
 }
 </style>
